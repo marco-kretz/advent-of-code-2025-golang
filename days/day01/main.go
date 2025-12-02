@@ -21,6 +21,7 @@ func main() {
 	durationOne := time.Since(startOne)
 	fmt.Println("Part 1:", resultOne, "in", durationOne)
 
+	// Part 2
 	startTwo := time.Now()
 	resultTwo := Part2(lines)
 	durationTwo := time.Since(startTwo)
