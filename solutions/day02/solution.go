@@ -1,34 +1,21 @@
-package main
+package day02
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
-	"github.com/marco-kretz/advent-of-code-2025-go/internal/kit"
+	"github.com/marco-kretz/advent-of-code-2025-go/internal/puzzle"
 )
 
 const DialSize = 100
 const StartPosition = 50
 
-func main() {
-	lines := kit.ReadFile("inputs/day02.txt")
-
-	// Part 1
-	startOne := time.Now()
-	resultOne := Part1(lines)
-	durationOne := time.Since(startOne)
-	fmt.Println("Part 1:", resultOne, "in", durationOne)
-
-	// Part 2
-	startTwo := time.Now()
-	resultTwo := Part2(lines)
-	durationTwo := time.Since(startTwo)
-	fmt.Println("Part 2:", resultTwo, "in", durationTwo)
+func init() {
+	puzzle.Register(2, 1, Part1)
+	puzzle.Register(2, 2, Part2)
 }
 
-func Part1(lines []string) int {
+func Part1(lines []string) (int, error) {
 	firstLine := lines[0]
 	ranges := strings.Split(firstLine, ",")
 	result := 0
@@ -45,10 +32,10 @@ func Part1(lines []string) int {
 		}
 	}
 
-	return result
+	return result, nil
 }
 
-func Part2(lines []string) int {
+func Part2(lines []string) (int, error) {
 	firstLine := lines[0]
 	ranges := strings.Split(firstLine, ",")
 	result := 0
@@ -65,7 +52,7 @@ func Part2(lines []string) int {
 		}
 	}
 
-	return result
+	return result, nil
 }
 
 // Check if a given integer consists of the same pattern exactly twice

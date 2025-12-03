@@ -1,31 +1,18 @@
-package main
+package day03
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
-	"github.com/marco-kretz/advent-of-code-2025-go/internal/kit"
+	"github.com/marco-kretz/advent-of-code-2025-go/internal/puzzle"
 )
 
-func main() {
-	lines := kit.ReadFile("inputs/day03.txt")
-
-	// Part 1
-	startOne := time.Now()
-	resultOne := Part1(lines)
-	durationOne := time.Since(startOne)
-	fmt.Println("Part 1:", resultOne, "in", durationOne)
-
-	// Part 2
-	startTwo := time.Now()
-	resultTwo := Part2(lines)
-	durationTwo := time.Since(startTwo)
-	fmt.Println("Part 2:", resultTwo, "in", durationTwo)
+func init() {
+	puzzle.Register(3, 1, Part1)
+	puzzle.Register(3, 2, Part2)
 }
 
-func Part1(lines []string) int {
+func Part1(lines []string) (int, error) {
 	totalOutput := 0
 
 	for _, bank := range lines {
@@ -58,10 +45,10 @@ func Part1(lines []string) int {
 		totalOutput += highestNumber
 	}
 
-	return totalOutput
+	return totalOutput, nil
 }
 
-func Part2(lines []string) int {
+func Part2(lines []string) (int, error) {
 	totalOutput := 0
 
 	for _, bank := range lines {
@@ -96,5 +83,5 @@ func Part2(lines []string) int {
 		totalOutput += bankJoltage
 	}
 
-	return totalOutput
+	return totalOutput, nil
 }
