@@ -62,5 +62,39 @@ func Part1(lines []string) int {
 }
 
 func Part2(lines []string) int {
-	return 0
+	totalOutput := 0
+
+	for _, bank := range lines {
+		bankArr := strings.Split(bank, "")
+		bankJoltages := [12]int{}
+
+		lastIndex := 0
+		for n := range 12 {
+			highest := 0
+
+			// Find highest n'th number
+			for i := lastIndex; i < len(bankArr)-11+n; i++ {
+				digit, _ := strconv.Atoi(bankArr[i])
+				if digit > highest {
+					highest = digit
+					lastIndex = i + 1
+				}
+			}
+
+			// Save highest found number
+			bankJoltages[n] = highest
+		}
+
+		// Convert int array to string
+		var sb strings.Builder
+		for _, num := range bankJoltages {
+			sb.WriteString(strconv.Itoa(num))
+		}
+
+		// Convert constructed "string-number" to int and add up
+		bankJoltage, _ := strconv.Atoi(sb.String())
+		totalOutput += bankJoltage
+	}
+
+	return totalOutput
 }
