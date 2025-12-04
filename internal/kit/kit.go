@@ -37,3 +37,24 @@ func ReadFile(path string) []string {
 func EuclideanModulo(dividend int, divisor int) int {
 	return ((dividend % divisor) + divisor) % divisor
 }
+
+func AsGrid(input []string) [][]string {
+	rows := len(input)
+	if rows == 0 {
+		return [][]string{}
+	}
+	cols := len(input[0])
+
+	grid := make([][]string, rows)
+
+	for i := range grid {
+		grid[i] = make([]string, cols)
+
+		for j := range grid[i] {
+			// This is safe fo ASCII. For UTF-8 we would need a rune
+			grid[i][j] = string(input[i][j])
+		}
+	}
+
+	return grid
+}
