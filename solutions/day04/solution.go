@@ -6,11 +6,12 @@ import (
 )
 
 const roll string = "@"
+const empty string = "."
 
-var directions [][]int
+var directions [8][2]int
 
 func init() {
-	directions = [][]int{
+	directions = [8][2]int{
 		{-1, 0},  // Top
 		{-1, 1},  // Top Right
 		{0, 1},   // Right
@@ -37,43 +38,87 @@ func Part1(lines []string) (int, error) {
 				continue
 			}
 
-			adjacents := 0
-			for _, d := range directions {
-				// Calculate adjacent position
-				y := i + d[0]
-				x := j + d[1]
-
-				// Checking y-axis bounds
-				if y < 0 || y >= len(grid) {
-					continue
-				}
-
-				// Checking x-axis bounds
-				if x < 0 || x >= len(grid[i]) {
-					continue
-				}
-
-				// Adjacent is a paper roll
-				if string(grid[y][x]) == roll {
-					adjacents++
-
-					// Stop if we already have too many
-					if adjacents > 3 {
-						break
-					}
-				}
-			}
-
-			if adjacents < 4 {
+			if isRemovable(grid, i, j) {
 				result++
 			}
 		}
 	}
 
 	return result, nil
-
 }
 
 func Part2(lines []string) (int, error) {
-	return 0, nil
+	// Build grid
+	grid := kit.AsGrid(lines)
+
+	// Closure for checking if we have any removable rolls left in the grid
+	hasRemovable := func(grid [][]string) (bool, int, int) {
+		for i := range grid {
+			for j := range grid[i] {
+				// Skip empty cells
+				if grid[i][j] == empty {
+					continue
+				}
+
+				if isRemovable(grid, i, j) {
+					return true, i, j
+				}
+			}
+		}
+
+		return false, -1, -1
+	}
+
+	result := 0
+	for {
+		ok, y, x := hasRemovable(grid)
+		if ok {
+			removeRoll(grid, y, x)
+			result++
+		} else {
+			break
+		}
+	}
+
+	return result, nil
+}
+
+// Check number of adjacent paper rolls.
+// Return true if number is below 4, else false.
+func isRemovable(grid [][]string, y, x int) bool {
+	adjacents := 0
+	for _, d := range directions {
+		// Calculate adjacent position
+		dy := y + d[0]
+		dx := x + d[1]
+
+		// Checking y-axis bounds
+		if dy < 0 || dy >= len(grid) {
+			continue
+		}
+
+		// Checking x-axis bounds
+		if dx < 0 || dx >= len(grid[y]) {
+			continue
+		}
+
+		// Adjacent is a paper roll
+		if string(grid[dy][dx]) == roll {
+			adjacents++
+
+			// Stop if we already have too many
+			if adjacents > 3 {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+// "Remove" a paper roll from the grid.
+func removeRoll(grid [][]string, y, x int) {
+	if string(grid[y][x]) == roll {
+		grid[y][x] = empty
+	}
 }
