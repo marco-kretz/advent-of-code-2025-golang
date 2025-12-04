@@ -5,8 +5,10 @@ import (
 	"github.com/marco-kretz/advent-of-code-2025-go/internal/puzzle"
 )
 
-const roll string = "@"
-const empty string = "."
+const (
+	roll  rune = '@'
+	empty rune = '.'
+)
 
 var directions [8][2]int
 
@@ -50,33 +52,28 @@ func Part1(lines []string) (int, error) {
 func Part2(lines []string) (int, error) {
 	// Build grid
 	grid := kit.AsGrid(lines)
+	result := 0
 
-	// Closure for checking if we have any removable rolls left in the grid
-	hasRemovable := func(grid [][]string) (bool, int, int) {
-		for i := range grid {
-			for j := range grid[i] {
-				// Skip empty cells
-				if grid[i][j] == empty {
-					continue
-				}
+	for {
+		var toRemove [][2]int
 
-				if isRemovable(grid, i, j) {
-					return true, i, j
+		// Look for removable paper rolls
+		for y := range grid {
+			for x := range grid[y] {
+				if grid[y][x] == roll && isRemovable(grid, y, x) {
+					toRemove = append(toRemove, [2]int{y, x})
 				}
 			}
 		}
 
-		return false, -1, -1
-	}
-
-	result := 0
-	for {
-		ok, y, x := hasRemovable(grid)
-		if ok {
-			removeRoll(grid, y, x)
-			result++
-		} else {
+		// No more items found to remove
+		if len(toRemove) == 0 {
 			break
+		}
+
+		for _, position := range toRemove {
+			grid[position[0]][position[1]] = empty
+			result++
 		}
 	}
 
@@ -85,12 +82,11 @@ func Part2(lines []string) (int, error) {
 
 // Check number of adjacent paper rolls.
 // Return true if number is below 4, else false.
-func isRemovable(grid [][]string, y, x int) bool {
+func isRemovable(grid [][]rune, y, x int) bool {
 	adjacents := 0
 	for _, d := range directions {
 		// Calculate adjacent position
-		dy := y + d[0]
-		dx := x + d[1]
+		dy, dx := y+d[0], x+d[1]
 
 		// Checking y-axis bounds
 		if dy < 0 || dy >= len(grid) {
@@ -103,7 +99,7 @@ func isRemovable(grid [][]string, y, x int) bool {
 		}
 
 		// Adjacent is a paper roll
-		if string(grid[dy][dx]) == roll {
+		if grid[dy][dx] == roll {
 			adjacents++
 
 			// Stop if we already have too many
@@ -114,11 +110,4 @@ func isRemovable(grid [][]string, y, x int) bool {
 	}
 
 	return true
-}
-
-// "Remove" a paper roll from the grid.
-func removeRoll(grid [][]string, y, x int) {
-	if string(grid[y][x]) == roll {
-		grid[y][x] = empty
-	}
 }
