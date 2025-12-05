@@ -12,6 +12,7 @@ import (
 	_ "github.com/marco-kretz/advent-of-code-2025-go/solutions/day02"
 	_ "github.com/marco-kretz/advent-of-code-2025-go/solutions/day03"
 	_ "github.com/marco-kretz/advent-of-code-2025-go/solutions/day04"
+	_ "github.com/marco-kretz/advent-of-code-2025-go/solutions/day05"
 )
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
 
 	fmt.Printf("🎄 Advent of Code 2025 - Day %02d 🎄\n", *day)
 
-	input := kit.ReadFile(fmt.Sprintf("inputs/day%02d.txt", *day))
+	input := kit.ReadFile(fmt.Sprintf("inputs/day%02d.txt", *day), true)
 
 	if err := runPart(*day, 1, input); err != nil {
 		fmt.Printf("Part 1: (Not implemented or error) %v\n", err)

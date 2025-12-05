@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func ReadFile(path string) []string {
+func ReadFile(path string, withEmptyLines bool) []string {
 	// Open the file
 	file, err := os.Open(path)
 	if err != nil {
@@ -22,7 +22,7 @@ func ReadFile(path string) []string {
 		line := scanner.Text()
 
 		// Ignore empty lines
-		if strings.TrimSpace(line) != "" {
+		if withEmptyLines || strings.TrimSpace(line) != "" {
 			lines = append(lines, line)
 		}
 	}
