@@ -8,6 +8,11 @@ import (
 	"github.com/marco-kretz/advent-of-code-2025-go/internal/puzzle"
 )
 
+type problem struct {
+	op   string
+	nums []int
+}
+
 func init() {
 	puzzle.Register(6, 1, Part1)
 	puzzle.Register(6, 2, Part2)
@@ -18,21 +23,22 @@ func Part1(lines []string) (int, error) {
 	cols := len(re.Split(lines[0], -1))
 
 	// Init 2D problems array
-	problems := make([][]string, cols)
-	for i := range problems {
-		problems[i] = make([]string, len(lines))
+	problemsArr := make([][]string, cols)
+	for i := range problemsArr {
+		problemsArr[i] = make([]string, len(lines))
 	}
 
 	// Fill problems array
 	for rowIndex, row := range lines {
 		for colIndex, cell := range re.Split(strings.TrimSpace(row), -1) {
-			problems[colIndex][rowIndex] = cell
+			problemsArr[colIndex][rowIndex] = cell
 		}
 	}
 
 	result := 0
-	for _, problem := range problems {
-		result += solveProblem(problem)
+	for _, column := range problemsArr {
+		p := toProblem(column)
+		result += p.solve()
 	}
 
 	return result, nil
@@ -42,28 +48,39 @@ func Part2(lines []string) (int, error) {
 	return 0, nil
 }
 
-func solveProblem(problem []string) int {
+// Convert a "problem column" to a problem struct
+func toProblem(arr []string) problem {
+	op := arr[len(arr)-1]
+	nums := make([]int, len(arr)-1)
+
+	for i := range nums {
+		value, _ := strconv.Atoi(arr[i])
+		nums[i] = value
+	}
+
+	return problem{
+		op:   op,
+		nums: nums,
+	}
+}
+
+// Return a problem's solution
+func (p problem) solve() int {
 	solution := 0
-	operator := problem[len(problem)-1]
 
-	for index, operandStr := range problem {
-		if index == len(problem)-1 {
-			break
-		}
-
-		operand, _ := strconv.Atoi(operandStr)
-		if index == 0 {
-			solution = operand
+	for i, value := range p.nums {
+		if i == 0 {
+			solution = value
 			continue
 		}
 
-		if operator == "+" {
-			solution += operand
+		if p.op == "+" {
+			solution += value
 			continue
 		}
 
-		if operator == "*" {
-			solution *= operand
+		if p.op == "*" {
+			solution *= value
 		}
 	}
 
