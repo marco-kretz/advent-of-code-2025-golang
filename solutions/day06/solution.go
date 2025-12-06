@@ -78,6 +78,8 @@ func Part2(lines []string) (int, error) {
 					inCol = false // Indicate to skip next (empty) col
 					break
 				}
+
+				continue
 			}
 
 			// Hit a number
