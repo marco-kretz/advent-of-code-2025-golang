@@ -13,6 +13,7 @@ import (
 	_ "github.com/marco-kretz/advent-of-code-2025-go/solutions/day03"
 	_ "github.com/marco-kretz/advent-of-code-2025-go/solutions/day04"
 	_ "github.com/marco-kretz/advent-of-code-2025-go/solutions/day05"
+	_ "github.com/marco-kretz/advent-of-code-2025-go/solutions/day06"
 )
 
 func main() {
