@@ -66,7 +66,6 @@ func Part2(lines []string) (int, error) {
 			end, _ := strconv.Atoi(idRange[1])
 			intervals = append(intervals, [2]int{start, end})
 		}
-		continue
 	}
 
 	// Sort intervals by start value
