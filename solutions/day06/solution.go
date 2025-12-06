@@ -4,7 +4,9 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode"
 
+	"github.com/marco-kretz/advent-of-code-2025-go/internal/kit"
 	"github.com/marco-kretz/advent-of-code-2025-go/internal/puzzle"
 )
 
@@ -45,32 +47,32 @@ func Part1(lines []string) (int, error) {
 }
 
 func Part2(lines []string) (int, error) {
+	grid := kit.AsGrid(lines)
 	problems := []problem{}
 	currentProblem := problem{}
 
 	inCol := true
 	// Iterate cols from right to left
-	for i := len(lines[0]) - 1; i >= 0; i-- {
+	for x := len(grid[0]) - 1; x >= 0; x-- {
 		// Skip the empty cols
-		if !inCol && i > 0 {
+		if !inCol && x > 0 {
 			inCol = true
 			continue
 		}
 
-		// Iterate over all rows in the current column
+		// Iterate rows top to bottom
 		builder := strings.Builder{}
-		for j, line := range lines {
-			// Current cell's value
-			val := strings.TrimSpace(string(line[i : i+1]))
+		for y := range grid {
+			value := grid[y][x]
 
-			// Hit end of column -> save the "col-number"
-			if j == len(lines)-1 {
+			// Hit end of column -> save the complete "col-number"
+			if y == len(grid)-1 {
 				num, _ := strconv.Atoi(builder.String())
 				currentProblem.nums = append(currentProblem.nums, num)
 
 				// Hit the operater -> end of "problem block" reached
-				if val != "" {
-					currentProblem.op = val
+				if !unicode.IsSpace(value) {
+					currentProblem.op = string(value)
 					problems = append(problems, currentProblem)
 					currentProblem = problem{}
 					inCol = false // Indicate to skip next (empty) col
@@ -79,8 +81,8 @@ func Part2(lines []string) (int, error) {
 			}
 
 			// Hit a number
-			if val != "" {
-				builder.WriteString(val)
+			if !unicode.IsSpace(value) {
+				builder.WriteString(string(value))
 			}
 		}
 	}
