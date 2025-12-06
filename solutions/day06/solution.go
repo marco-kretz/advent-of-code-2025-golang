@@ -45,10 +45,57 @@ func Part1(lines []string) (int, error) {
 }
 
 func Part2(lines []string) (int, error) {
-	return 0, nil
+	problems := []problem{}
+	currentProblem := problem{}
+
+	inCol := true
+	// Iterate cols from right to left
+	for i := len(lines[0]) - 1; i >= 0; i-- {
+		// Skip the empty cols
+		if !inCol && i > 0 {
+			inCol = true
+			continue
+		}
+
+		// Iterate over all rows in the current column
+		builder := strings.Builder{}
+		for j, line := range lines {
+			// Current cell's value
+			val := strings.TrimSpace(string(line[i : i+1]))
+
+			// Hit end of column -> save the "col-number"
+			if j == len(lines)-1 {
+				num, _ := strconv.Atoi(builder.String())
+				currentProblem.nums = append(currentProblem.nums, num)
+
+				// Hit the operater -> end of "problem block" reached
+				if val != "" {
+					currentProblem.op = val
+					problems = append(problems, currentProblem)
+					currentProblem = problem{}
+					inCol = false // Indicate to skip next (empty) col
+					break
+				}
+			}
+
+			// Hit a number
+			if val != "" {
+				builder.WriteString(val)
+			}
+		}
+	}
+
+	// Solve problems and add up result
+	result := 0
+	for _, problem := range problems {
+		result += problem.solve()
+	}
+
+	return result, nil
 }
 
 // Convert a "problem column" to a problem struct
+// Only used in Part1
 func toProblem(arr []string) problem {
 	op := arr[len(arr)-1]
 	nums := make([]int, len(arr)-1)
