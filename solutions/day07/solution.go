@@ -12,6 +12,10 @@ const (
 	beam     rune = '|'
 )
 
+type point struct {
+	x, y int
+}
+
 func init() {
 	puzzle.Register(7, 1, Part1)
 	puzzle.Register(7, 2, Part2)
@@ -29,14 +33,39 @@ func Part1(lines []string) (int, error) {
 		}
 	}
 
-	return hitSplitter(grid, sy, sx), nil
+	// Count splitters hit for each row
+	splitterMap := make(map[int][]int)
+	hitSplitter(grid, splitterMap, sy, sx)
+
+	// Add row's splitter counts
+	hits := 0
+	for _, v := range splitterMap {
+		hits += len(v)
+	}
+
+	return hits, nil
 }
 
 func Part2(lines []string) (int, error) {
-	return 0, nil
+	grid := kit.AsGrid(lines)
+
+	// Find start point
+	sy, sx := 0, 0
+	for i, val := range grid[0] {
+		if val == start {
+			sx = i
+			break
+		}
+	}
+
+	// Cache
+	cache := make(map[point]int)
+	totalPaths := findPaths(grid, cache, sy, sx)
+
+	return totalPaths, nil
 }
 
-func hitSplitter(grid [][]rune, sy, sx int) int {
+func hitSplitter(grid [][]rune, splitterMap map[int][]int, sy, sx int) {
 	// Follow beam downwards until end of field or splitter
 	// Do not follow if cell has already been "beamed"
 	for sy < len(grid)-1 && grid[sy][sx] != splitter && grid[sy][sx] != beam {
@@ -45,16 +74,54 @@ func hitSplitter(grid [][]rune, sy, sx int) int {
 	}
 
 	// Splitter hit!
-	splittersHit := 0
 	if grid[sy][sx] == splitter {
 		grid[sy][sx] = done
-		splittersHit++
+		if _, ok := splitterMap[sy]; ok {
+			splitterMap[sy] = append(splitterMap[sy], sx)
+		} else {
+			splitterMap[sy] = []int{sy}
+		}
 
 		// Split beam left
-		splittersHit += hitSplitter(grid, sy, sx-1)
+		hitSplitter(grid, splitterMap, sy, sx-1)
 		// Split beam right
-		splittersHit += hitSplitter(grid, sy, sx+1)
+		hitSplitter(grid, splitterMap, sy, sx+1)
+	}
+}
+
+func findPaths(grid [][]rune, cache map[point]int, y, x int) int {
+	// Point already processed?
+	if val, ok := cache[point{x, y}]; ok {
+		return val
 	}
 
-	return splittersHit
+	// Follow beam downwards until abyss
+	currY := y
+	for currY < len(grid) {
+		// Out of bounds?
+		if x < 0 || x >= len(grid[0]) {
+			return 1
+		}
+
+		// Hit a splitter?
+		cell := grid[currY][x]
+		if cell == splitter {
+			// Go left
+			leftCount := findPaths(grid, cache, currY, x-1)
+			// Go right
+			rightCount := findPaths(grid, cache, currY, x+1)
+
+			// Sum up paths found
+			total := leftCount + rightCount
+
+			// Set point as processed
+			cache[point{x, y}] = total
+
+			return total
+		}
+
+		currY++
+	}
+
+	return 1
 }
